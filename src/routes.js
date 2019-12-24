@@ -4,6 +4,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 
 import Home from './pages/Home';
 import Cart from './pages/Cart';
+
 import Header from './components/Header';
 
 const Routes = createAppContainer(
@@ -13,7 +14,7 @@ const Routes = createAppContainer(
       Cart,
     },
     {
-      initialRouteName: 'Cart',
+      // initialRouteName: 'Cart',
       defaultNavigationOptions: navigation => ({
         header: <Header {...navigation} />,
       }),

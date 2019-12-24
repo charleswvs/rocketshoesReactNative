@@ -3,7 +3,6 @@ import styled from 'styled-components/native';
 import logo from '../../assets/images/logo.png';
 
 export const Wrapper = styled.SafeAreaView`
-  flex: 0;
   flex-direction: row;
   background: #191920;
 `;

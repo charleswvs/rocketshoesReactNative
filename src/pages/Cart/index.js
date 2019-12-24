@@ -1,5 +1,10 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {FlatList} from 'react-native-gesture-handler';
+
+import * as CartActions from '../../store/modules/cart/actions';
 
 import {
   Container,
@@ -22,10 +27,11 @@ import {
   OrderText,
 } from './styles';
 
-export default function Cart() {
+function Cart({cart, removeFromCart}) {
   return (
     <Container>
       <Products>
+        <FlatList />
         <Product>
           <ProductInfo>
             <ProductImage
@@ -64,3 +70,12 @@ export default function Cart() {
     </Container>
   );
 }
+
+const mapStateToProps = state => ({
+  cart: state.cart,
+});
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

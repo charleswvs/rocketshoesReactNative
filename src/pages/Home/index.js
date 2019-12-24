@@ -1,5 +1,13 @@
-import React from 'react';
+import React, {Component} from 'react';
+import {FlatList} from 'react-native';
+
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import * as CartActions from '../../store/modules/cart/actions';
+
+import api from '../../services/api';
 
 import {
   Container,
@@ -12,20 +20,43 @@ import {
   CartAmount,
   AddToCartText,
 } from './styles';
+// import {formatPrice} from '../../util/format';
 
-export default function Home() {
-  return (
-    <Container>
+class Home extends Component {
+  state = {
+    products: [],
+  };
+
+  async componentDidMount() {
+    const response = (await api.get('products')).data;
+
+    const data = response.map(product => ({
+      ...product,
+      priceFormatted: product.price,
+    }));
+
+    this.setState({
+      products: data,
+    });
+  }
+
+  handleAddToCart = product => {
+    const {addToCart} = this.props;
+    console.tron.log(product);
+    addToCart(product);
+  };
+
+  renderProduct = ({item}) => {
+    return (
       <Product>
         <ProductPicture
           source={{
-            uri:
-              'https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_zoom1.jpg?ims=544x',
+            uri: item.image,
           }}
         />
-        <ProductName>Tenis de caminhada leve e confortavel</ProductName>
-        <ProductPrice>R$159,90</ProductPrice>
-        <ButtonContainer>
+        <ProductName>{item.title}</ProductName>
+        <ProductPrice>{item.priceFormatted}</ProductPrice>
+        <ButtonContainer onPress={() => this.handleAddToCart(item)}>
           <CartIcon>
             <Icon name="add-shopping-cart" color="#FFF" size={20} />
             <CartAmount>3</CartAmount>
@@ -33,6 +64,26 @@ export default function Home() {
           <AddToCartText>ADICIONAR</AddToCartText>
         </ButtonContainer>
       </Product>
-    </Container>
-  );
+    );
+  };
+
+  render() {
+    const {products} = this.state;
+    return (
+      <Container>
+        <FlatList
+          horizontal
+          data={products}
+          extraData={this.props}
+          keyExtractor={item => String(item.id)}
+          renderItem={this.renderProduct}
+        />
+      </Container>
+    );
+  }
 }
+
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(null, mapDispatchToProps)(Home);
