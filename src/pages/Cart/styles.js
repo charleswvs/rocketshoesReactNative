@@ -4,7 +4,7 @@ export const Container = styled.View`
   padding: 10px;
   background: #fff;
   border-radius: 4px;
-  margin-top: 100px;
+  margin: 2px 10px;
 `;
 
 export const Products = styled.View``;
@@ -99,4 +99,16 @@ export const OrderText = styled.Text`
   color: #fff;
   text-transform: uppercase;
   font-weight: bold;
+`;
+
+export const EmptyCartContainer = styled.View`
+  min-height: 200px;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: column;
+`;
+
+export const EmptyCartText = styled.Text`
+  margin-top: 70px;
+  font-size: 25px;
 `;

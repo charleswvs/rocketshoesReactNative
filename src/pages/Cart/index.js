@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
@@ -25,54 +25,79 @@ import {
   TotalPrice,
   Order,
   OrderText,
+  EmptyCartContainer,
+  EmptyCartText,
 } from './styles';
 
-function Cart({cart, removeFromCart}) {
+function Cart({cart, total, removeFromCart}) {
+  console.tron.log(cart.length);
   return (
     <Container>
-      <Products>
-        <FlatList />
-        <Product>
-          <ProductInfo>
-            <ProductImage
-              source={{
-                uri:
-                  'https://static.netshoes.com.br/produtos/tenis-caminhada-confortavel-detalhes-couro-masculino/04/E74-0413-304/E74-0413-304_zoom1.jpg?ims=544x',
-              }}
-            />
-            <ProductDetail>
-              <ProductTitle>Tenis de caminhada leve e confortável</ProductTitle>
-              <ProductPrice>R$179,90</ProductPrice>
-            </ProductDetail>
-            <ProductDelete>
-              <Icon name="delete-forever" size={30} color="#7159c1" />
-            </ProductDelete>
-          </ProductInfo>
-          <ProductControls>
-            <ProductControlButton>
-              <Icon name="remove-circle-outline" size={20} color="#7159c1" />
-            </ProductControlButton>
-            <ProductAmout value="4" />
-            <ProductControlButton>
-              <Icon name="add-circle-outline" size={20} color="#7159c1" />
-            </ProductControlButton>
-            <ProductsSubtotal>R$ 1500,00</ProductsSubtotal>
-          </ProductControls>
-        </Product>
-        <TotalContainer>
-          <TotalText>TOTAL</TotalText>
-          <TotalPrice>R$ 1619,10</TotalPrice>
+      {cart.length ? (
+        <>
+          <Products>
+            {cart.map(product => (
+              <Product key={product.id}>
+                <ProductInfo>
+                  <ProductImage
+                    source={{
+                      uri: product.image,
+                    }}
+                  />
+                  <ProductDetail>
+                    <ProductTitle>{product.title}</ProductTitle>
+                    <ProductPrice>{product.price}</ProductPrice>
+                  </ProductDetail>
+                  <ProductDelete onPress={() => removeFromCart(product.id)}>
+                    <Icon name="delete-forever" size={30} color="#7159c1" />
+                  </ProductDelete>
+                </ProductInfo>
+                <ProductControls>
+                  <ProductControlButton>
+                    <Icon
+                      name="remove-circle-outline"
+                      size={20}
+                      color="#7159c1"
+                    />
+                  </ProductControlButton>
+                  <ProductAmout value={String(product.amount)} />
+                  <ProductControlButton>
+                    <Icon name="add-circle-outline" size={20} color="#7159c1" />
+                  </ProductControlButton>
+                  <ProductsSubtotal>{product.subtotal}</ProductsSubtotal>
+                </ProductControls>
+              </Product>
+            ))}
+          </Products>
+          <TotalContainer>
+            <TotalText>TOTAL</TotalText>
+            <TotalPrice>{total}</TotalPrice>
+            <Order>
+              <OrderText>FINALIZAR PEDIDO</OrderText>
+            </Order>
+          </TotalContainer>
+        </>
+      ) : (
+        <EmptyCartContainer>
+          <EmptyCartText>Seu Carrinho está vazio!</EmptyCartText>
           <Order>
-            <OrderText>FINALIZAR PEDIDO</OrderText>
+            <OrderText>COMPRAR PRODUTOS</OrderText>
           </Order>
-        </TotalContainer>
-      </Products>
+        </EmptyCartContainer>
+      )}
     </Container>
   );
 }
 
 const mapStateToProps = state => ({
-  cart: state.cart,
+  cart: state.cart.map(product => ({
+    ...product,
+    subtotal: product.price * product.amount,
+  })),
+  total: state.cart.reduce(
+    (total, product) => total + product.price * product.amount,
+    0,
+  ),
 });
 
 const mapDispatchToProps = dispatch =>
