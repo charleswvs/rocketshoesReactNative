@@ -1,8 +1,7 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {FlatList} from 'react-native-gesture-handler';
 
 import * as CartActions from '../../store/modules/cart/actions';
 
@@ -29,8 +28,14 @@ import {
   EmptyCartText,
 } from './styles';
 
-function Cart({cart, total, removeFromCart}) {
-  console.tron.log(cart.length);
+function Cart({cart, total, updateAmountRequest, removeFromCart, navigation}) {
+  function increment(product) {
+    updateAmountRequest(product.id, product.amount + 1);
+  }
+
+  function decrement(product) {
+    updateAmountRequest(product.id, product.amount - 1);
+  }
   return (
     <Container>
       {cart.length ? (
@@ -53,7 +58,7 @@ function Cart({cart, total, removeFromCart}) {
                   </ProductDelete>
                 </ProductInfo>
                 <ProductControls>
-                  <ProductControlButton>
+                  <ProductControlButton onPress={() => decrement(product)}>
                     <Icon
                       name="remove-circle-outline"
                       size={20}
@@ -61,7 +66,7 @@ function Cart({cart, total, removeFromCart}) {
                     />
                   </ProductControlButton>
                   <ProductAmout value={String(product.amount)} />
-                  <ProductControlButton>
+                  <ProductControlButton onPress={() => increment(product)}>
                     <Icon name="add-circle-outline" size={20} color="#7159c1" />
                   </ProductControlButton>
                   <ProductsSubtotal>{product.subtotal}</ProductsSubtotal>
@@ -80,7 +85,7 @@ function Cart({cart, total, removeFromCart}) {
       ) : (
         <EmptyCartContainer>
           <EmptyCartText>Seu Carrinho está vazio!</EmptyCartText>
-          <Order>
+          <Order onPress={() => navigation.navigate('Home')}>
             <OrderText>COMPRAR PRODUTOS</OrderText>
           </Order>
         </EmptyCartContainer>
