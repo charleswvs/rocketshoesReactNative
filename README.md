@@ -5,5 +5,7 @@ This app was created using the following:
 <li>React Native </li>
 <li>Redux </li>
 <li>Reactotron for debugging </li>
+<li>React hooks </li>
+
 
 Note: the IOS version hasn't been tested, since I don't have a device, nor the tools to do so.

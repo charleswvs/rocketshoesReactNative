@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import {FlatList} from 'react-native';
 
 import {connect} from 'react-redux';
@@ -20,33 +20,31 @@ import {
   CartAmount,
   AddToCartText,
 } from './styles';
-// import {formatPrice} from '../../util/format';
+import {formatPrice} from '../../util/format';
 
-class Home extends Component {
-  state = {
-    products: [],
-  };
+function Home({amount, addToCartRequest}) {
+  const [products, setProducts] = useState([]);
 
-  async componentDidMount() {
-    const response = (await api.get('products')).data;
+  useEffect(() => {
+    async function loadProducts() {
+      const response = await api.get('products');
 
-    const data = response.map(product => ({
-      ...product,
-      priceFormatted: product.price,
-    }));
+      const data = response.data.map(product => ({
+        ...product,
+        priceFormatted: formatPrice(product.price), // the formatted price must be put in the font, or else it will consume resource
+      }));
 
-    this.setState({
-      products: data,
-    });
+      setProducts(data);
+    }
+
+    loadProducts();
+  }, []);
+
+  function handleAddToCart(productID) {
+    addToCartRequest(productID);
   }
 
-  handleAddToCart = productID => {
-    const {addToCartRequest} = this.props;
-    addToCartRequest(productID);
-  };
-
-  renderProduct = ({item}) => {
-    const {amount} = this.props;
+  function renderProduct({item}) {
     return (
       <Product>
         <ProductPicture
@@ -56,7 +54,7 @@ class Home extends Component {
         />
         <ProductName>{item.title}</ProductName>
         <ProductPrice>{item.priceFormatted}</ProductPrice>
-        <ButtonContainer onPress={() => this.handleAddToCart(item.id)}>
+        <ButtonContainer onPress={() => handleAddToCart(item.id)}>
           <CartIcon>
             <Icon name="add-shopping-cart" color="#FFF" size={20} />
             <CartAmount>{amount[item.id] || 0}</CartAmount>
@@ -65,22 +63,19 @@ class Home extends Component {
         </ButtonContainer>
       </Product>
     );
-  };
-
-  render() {
-    const {products} = this.state;
-    return (
-      <Container>
-        <FlatList
-          horizontal
-          data={products}
-          extraData={this.props}
-          keyExtractor={item => String(item.id)}
-          renderItem={this.renderProduct}
-        />
-      </Container>
-    );
   }
+
+  return (
+    <Container>
+      <FlatList
+        horizontal
+        data={products}
+        extraData={amount}
+        keyExtractor={item => String(item.id)}
+        renderItem={renderProduct}
+      />
+    </Container>
+  );
 }
 
 const mapStateToProps = state => ({

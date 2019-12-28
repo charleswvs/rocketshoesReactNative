@@ -27,6 +27,7 @@ import {
   EmptyCartContainer,
   EmptyCartText,
 } from './styles';
+import {formatPrice} from '../../util/format';
 
 function Cart({cart, total, updateAmountRequest, removeFromCart, navigation}) {
   function increment(product) {
@@ -69,14 +70,16 @@ function Cart({cart, total, updateAmountRequest, removeFromCart, navigation}) {
                   <ProductControlButton onPress={() => increment(product)}>
                     <Icon name="add-circle-outline" size={20} color="#7159c1" />
                   </ProductControlButton>
-                  <ProductsSubtotal>{product.subtotal}</ProductsSubtotal>
+                  <ProductsSubtotal>
+                    {formatPrice(product.subtotal)}
+                  </ProductsSubtotal>
                 </ProductControls>
               </Product>
             ))}
           </Products>
           <TotalContainer>
             <TotalText>TOTAL</TotalText>
-            <TotalPrice>{total}</TotalPrice>
+            <TotalPrice>{formatPrice(total)}</TotalPrice>
             <Order>
               <OrderText>FINALIZAR PEDIDO</OrderText>
             </Order>
